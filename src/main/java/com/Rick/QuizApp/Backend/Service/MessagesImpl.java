@@ -1,4 +1,5 @@
 package com.Rick.QuizApp.Backend.Service;
+import com.Rick.QuizApp.Backend.Model.ResponseCodes;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 
@@ -9,29 +10,38 @@ public class MessagesImpl implements Messages{
 
 
     @Override
-    public void addMessage(String message){
+    public ResponseCodes addMessage(String message){
         if(messages == null){
             messages = new ArrayList<>();
         }
         messages.add(message);
+        return ResponseCodes.SUCCESS;
     }
     @Override
-    public void deleteMessage(int position){
+    public ResponseCodes deleteMessage(int position){
         if(messages == null){
-            return;
+            return ResponseCodes.ARRAYNOTINITIALIZED;
         }
-        if((messages.size() > 0) && (0 <= position) && (position <= messages.size())){
+        if((messages.size() > 0) && (0 <= position) && (position < messages.size())){
             messages.remove(position);
+            return ResponseCodes.SUCCESS;
         }
+        return ResponseCodes.POSITIONERROR;
+
     }
     @Override
-    public void changeMessage(String message, int position){
+    public ResponseCodes changeMessage(String message, int position){
         if(messages == null){
-            return;
+            return ResponseCodes.ARRAYNOTINITIALIZED;
         }
-        if((messages.size() >0) && (0 <= position) && (position <= messages.size())){
+        if((messages.size() >0) && (0 <= position) && (position < messages.size())){
             messages.set(position, message);
+            return ResponseCodes.SUCCESS;
         }
+        else{
+            return ResponseCodes.POSITIONERROR;
+        }
+
     }
     @Override
     public ArrayList getMessages(){

@@ -1,5 +1,6 @@
 package com.Rick.QuizApp.Backend.Controller;
 
+import com.Rick.QuizApp.Backend.Model.ResponseCodes;
 import com.Rick.QuizApp.Backend.Model.ResponseModel;
 import com.Rick.QuizApp.Backend.Service.Messages;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,31 +18,47 @@ public class Controller {
     @GetMapping
     public ResponseModel<ArrayList<String>> getMessages(){
         ResponseModel<ArrayList<String>> response = new ResponseModel<>();
-
+        ArrayList<String> temp = service.getMessages();
         response.setStatusMessage("success");
-        response.setReturningData(service.getMessages());
+        response.setReturningData(temp);
         return response;
     }
     @PostMapping
     public ResponseModel addMessages(@RequestParam String m){
         ResponseModel response = new ResponseModel<>();
-        service.addMessage(m);
-        response.setStatusMessage("success");
+        if(m.isBlank()){
+            ResponseCodes error = ResponseCodes.INVALIDMSGINPUT;
+            response.setStatusMessage(error.getDesc());
+            response.setErrorCode(error.getErrorCode());
+            return response;
+        }
+
+        ResponseCodes responseData = service.addMessage(m);
+        response.setStatusMessage(responseData.getDesc());
+        response.setErrorCode(responseData.getErrorCode());
         return response;
 
     }
     @DeleteMapping
     public ResponseModel deleteMessage(@RequestParam int position){
         ResponseModel response = new ResponseModel<>();
-        service.deleteMessage(position);
-        response.setStatusMessage("success");
+        ResponseCodes responseData = service.deleteMessage(position);
+        response.setStatusMessage((responseData.getDesc()));
+        response.setErrorCode(responseData.getErrorCode());
         return response;
     }
     @PatchMapping
     public ResponseModel editMessage(@RequestParam String newMsg, @RequestParam int position){
         ResponseModel response = new ResponseModel<>();
-        service.changeMessage(newMsg, position);
-        response.setStatusMessage("success");
+        if(newMsg.isBlank()){
+            ResponseCodes error = ResponseCodes.INVALIDMSGINPUT;
+            response.setStatusMessage(error.getDesc());
+            response.setErrorCode(error.getErrorCode());
+            return response;
+        }
+        ResponseCodes responseData = service.changeMessage(newMsg,position);
+        response.setStatusMessage(responseData.getDesc());
+        response.setErrorCode(responseData.getErrorCode());
         return response;
 
     }
